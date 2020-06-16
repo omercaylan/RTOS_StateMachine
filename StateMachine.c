@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-
+#include <stdbool.h>
 //TODO: State machine create
 //TODO: USE Thread
 //TODO: Use clock
@@ -41,6 +41,12 @@ typedef struct
     uint8_t RerunsCount;
 } StateMachineType;
 
+typedef struct
+{
+    uint32_t nextStateAvaible : 1;
+    uint32_t timeout;
+} StateControl_t;
+
 State Sm_StateA(void) { printf("State A\n"); };
 State Sm_StateB(void) { printf("State B\n"); };
 State Sm_StateC(void) { printf("State C\n"); };
@@ -59,13 +65,23 @@ StateMachineType StateList[][4] = {
      {Sm_StateD, STATE_D, 80, 8}}
 
 };
-
+StateControl_t stateControl = {0};
 void StateMachine()
 {
-    StateList[0][0].funk();
-    printf("%d\n", StateList[0][0].StateInfo);
-    printf("%d\n", StateList[0][0].TimeoutNumber);
-    printf("%d\n", StateList[1][1].RerunsCount);
+
+    if (stateControl.nextStateAvaible == true)
+    {
+        StateList[0][0].funk();
+        printf("%d\n", StateList[0][0].StateInfo);
+        printf("%d\n", StateList[0][0].TimeoutNumber);
+        printf("%d\n", StateList[1][1].RerunsCount);
+    }
+
+    if (stateControl.timeout)
+    {
+        /* code */
+    }
+    
 };
 
 void CheckTimeOut() { printf("Timeout \n"); };
