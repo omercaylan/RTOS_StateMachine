@@ -95,19 +95,21 @@ State Sm_StateH(void)
     //setRestartDownState(STATE_A);
     return SUCCES;
 };
-StateMachineType StateList[][4] = {
+StateMachineType StateList[][5] = {
     {//First sTate
      {Sm_StateA, STATE_A, 10, 1},
      {Sm_StateB, STATE_B, 20, 2},
      {Sm_StateC, STATE_C, 30, 3},
-     {Sm_StateD, STATE_D, 40, 4}
+     {Sm_StateD, STATE_D, 40, 4},
+     {NULL, STATE_D, 40, 4}
 
     },
     {//Second State
      {Sm_StateE, STATE_A, 50, 5},
      {Sm_StateF, STATE_B, 60, 6},
      {Sm_StateG, STATE_C, 70, 7},
-     {Sm_StateH, STATE_D, 80, 8}}
+     {Sm_StateH, STATE_D, 80, 8},
+     {NULL, STATE_D, 40, 4}}
 
 };
 StateControl_t stateControl = {true};
@@ -122,16 +124,12 @@ static void StateMachine()
     {
         stateControl.nextStateAvaible = false;
         runningState = StateList[stateControl.upState][stateControl.downState].funk;
+        if (runningState == NULL)
+            printf("NULLL DEGERRERRRRRRR\n\n\n");
         timeoutConter = StateList[stateControl.upState][stateControl.downState].TimeoutNumber;
     }
 
     State stateReturn = runningState();
-
-    if (stateControl.downState > 3)
-    {
-        stateControl.upState = 0;
-        stateControl.downState = 0;
-    }
 
     if (stateReturn == SUCCES)
     {
@@ -139,6 +137,12 @@ static void StateMachine()
         printf("--%d", StateList[stateControl.upState][stateControl.downState].RerunsCount);
         printf("--%d\n", StateList[stateControl.upState][stateControl.downState].TimeoutNumber);
         stateControl.downState++;
+
+        //if (stateControl.downState > 2)
+        //{
+        //    stateControl.upState = 0;
+        //    stateControl.downState = 0;
+        //}
         stateControl.nextStateAvaible = true;
 
         if (StateList[stateControl.upState][stateControl.downState].funk == NULL)
@@ -162,8 +166,10 @@ void CheckTimeOut() { printf("Timeout \n"); };
 
 void One_Ms_Task()
 {
+    //Tasklarin kac saniye calisgini burada control et
     StateMachine();
     CheckTimeOut();
+    //------------------------
 }
 int main()
 {
