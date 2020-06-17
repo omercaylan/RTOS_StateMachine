@@ -8,10 +8,10 @@
 
 typedef enum
 {
-    IDLE_STETA,
-    SAFETY_STATE,
-    MAIN_STATE,
-    DIAGNOSTIC_STATE
+    IDLE_STETA,      //waiting and next state transion here
+    SAFETY_STATE,    //all component init and ram check rom check here
+    MAIN_STATE,      //running main state
+    DIAGNOSTIC_STATE //diag state
 } ALL_SCENARIO_STATE;
 
 typedef enum
@@ -33,9 +33,10 @@ typedef enum
     MAX_STETE
 } StateType;
 
+typedef State (*StateFunction_type)();
 typedef struct
 {
-    State (*funk)(void);
+    StateFunction_type funk;
     StateType StateInfo;
     int TimeoutNumber;
     uint8_t RerunsCount;
@@ -45,6 +46,8 @@ typedef struct
 {
     uint32_t nextStateAvaible : 1;
     uint32_t timeout;
+    ALL_SCENARIO_STATE upState;
+    uint8_t downState;
 } StateControl_t;
 
 State Sm_StateA(void) { printf("State A\n"); };
@@ -65,23 +68,40 @@ StateMachineType StateList[][4] = {
      {Sm_StateD, STATE_D, 80, 8}}
 
 };
-StateControl_t stateControl = {0};
+StateControl_t stateControl = {true};
+StateFunction_type runningState;
+int timeoutConter = 0;
+bool isTimeoutOccur = 0;
 void StateMachine()
 {
 
     if (stateControl.nextStateAvaible == true)
     {
-        StateList[0][0].funk();
-        printf("%d\n", StateList[0][0].StateInfo);
-        printf("%d\n", StateList[0][0].TimeoutNumber);
-        printf("%d\n", StateList[1][1].RerunsCount);
+        runningState = StateList[stateControl.upState][stateControl.downState].funk;
+        timeoutConter = StateList[0][0].TimeoutNumber;
     }
 
-    if (stateControl.timeout)
+    if (runningState() == true)
+    {
+        stateControl.nextStateAvaible = true;
+        stateControl.downState++;
+        if (StateList[stateControl.upState][stateControl.downState].funk == NULL)
+        {
+            //clear all state
+        }
+    }
+    else if (isTimeoutOccur == true)
+    {
+        //Timeout handle here
+    }
+    else
     {
         /* code */
     }
-    
+
+    printf("%d\n", StateList[0][0].StateInfo);
+    printf("%d\n", StateList[0][0].TimeoutNumber);
+    printf("%d\n", StateList[1][1].RerunsCount);
 };
 
 void CheckTimeOut() { printf("Timeout \n"); };
