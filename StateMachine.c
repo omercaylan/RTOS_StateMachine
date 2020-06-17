@@ -53,42 +53,61 @@ typedef struct
 
 State Sm_StateA(void)
 {
-    printf("State A\n");
+    printf("State A");
     return SUCCES;
 };
 State Sm_StateB(void)
 {
-    printf("State B\n");
+    printf("State B");
     return SUCCES;
 };
 State Sm_StateC(void)
 {
-    printf("State C\n");
+    printf("State C");
     return SUCCES;
 };
 State Sm_StateD(void)
 {
-    printf("State D\n");
+    printf("State D");
     return SUCCES;
 };
 State Sm_StateE(void)
 {
-    printf("State D\n");
+    printf("State E");
     //setRestartDownState(STATE_A);
-    return RESTART;
+    return SUCCES;
 };
-
+State Sm_StateF(void)
+{
+    printf("State F");
+    //setRestartDownState(STATE_A);
+    return SUCCES;
+};
+State Sm_StateG(void)
+{
+    printf("State G");
+    //setRestartDownState(STATE_A);
+    return SUCCES;
+};
+State Sm_StateH(void)
+{
+    printf("State H");
+    //setRestartDownState(STATE_A);
+    return SUCCES;
+};
 StateMachineType StateList[][4] = {
     {//First sTate
      {Sm_StateA, STATE_A, 10, 1},
      {Sm_StateB, STATE_B, 20, 2},
      {Sm_StateC, STATE_C, 30, 3},
-     {Sm_StateD, STATE_D, 40, 4}},
+     {Sm_StateD, STATE_D, 40, 4}
+
+    },
     {//Second State
-     {Sm_StateA, STATE_A, 50, 5},
-     {Sm_StateB, STATE_B, 60, 6},
-     {Sm_StateC, STATE_C, 70, 7},
-     {Sm_StateD, STATE_D, 80, 8}}
+     {Sm_StateE, STATE_A, 50, 5},
+     {Sm_StateF, STATE_B, 60, 6},
+     {Sm_StateG, STATE_C, 70, 7},
+     {Sm_StateH, STATE_D, 80, 8}}
 
 };
 StateControl_t stateControl = {true};
@@ -101,17 +120,27 @@ static void StateMachine()
 
     if (stateControl.nextStateAvaible == true)
     {
+        stateControl.nextStateAvaible = false;
         runningState = StateList[stateControl.upState][stateControl.downState].funk;
         timeoutConter = StateList[stateControl.upState][stateControl.downState].TimeoutNumber;
     }
+
     State stateReturn = runningState();
+
+    if (stateControl.downState > 3)
+    {
+        stateControl.upState = 0;
+        stateControl.downState = 0;
+    }
+
     if (stateReturn == SUCCES)
     {
-        printf("%d\n", StateList[stateControl.upState][stateControl.downState].StateInfo);
-        printf("%d\n", StateList[stateControl.upState][stateControl.downState].RerunsCount);
-        printf("%d\n", StateList[stateControl.upState][stateControl.downState].TimeoutNumber);
-        stateControl.nextStateAvaible = true;
+        printf("--%d", StateList[stateControl.upState][stateControl.downState].StateInfo);
+        printf("--%d", StateList[stateControl.upState][stateControl.downState].RerunsCount);
+        printf("--%d\n", StateList[stateControl.upState][stateControl.downState].TimeoutNumber);
         stateControl.downState++;
+        stateControl.nextStateAvaible = true;
+
         if (StateList[stateControl.upState][stateControl.downState].funk == NULL)
         {
             //clear all state
@@ -127,10 +156,6 @@ static void StateMachine()
     {
         /* code */
     }
-
-    printf("%d\n", StateList[0][0].StateInfo);
-    printf("%d\n", StateList[0][0].TimeoutNumber);
-    printf("%d\n", StateList[1][1].RerunsCount);
 };
 
 void CheckTimeOut() { printf("Timeout \n"); };
@@ -142,7 +167,7 @@ void One_Ms_Task()
 }
 int main()
 {
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 20; i++)
     {
         One_Ms_Task();
     }
