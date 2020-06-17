@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "Timeout.h"
 //TODO: State machine create
 //TODO: USE Thread
 //TODO: Use clock
@@ -54,7 +55,7 @@ typedef struct
 State Sm_StateA(void)
 {
     printf("State A");
-    return SUCCES;
+    return FAILED;
 };
 State Sm_StateB(void)
 {
@@ -97,10 +98,10 @@ State Sm_StateH(void)
 };
 StateMachineType StateList[][5] = {
     {//First sTate
-     {Sm_StateA, STATE_A, 10, 1},
-     {Sm_StateB, STATE_B, 20, 2},
-     {Sm_StateC, STATE_C, 30, 3},
-     {Sm_StateD, STATE_D, 40, 4},
+     {Sm_StateA, STATE_A, 0, 1},
+     {Sm_StateB, STATE_B, 0, 2},
+     {Sm_StateC, STATE_C, 0, 3},
+     {Sm_StateD, STATE_D, 10, 4},
      {NULL, STATE_D, 40, 4}
 
     },
@@ -115,7 +116,7 @@ StateMachineType StateList[][5] = {
 StateControl_t stateControl = {true};
 StateFunction_type runningState;
 int timeoutConter = 0;
-bool isTimeoutOccur = 0;
+bool isTimeoutEnable = false;
 
 static void StateMachine()
 {
@@ -124,12 +125,31 @@ static void StateMachine()
     {
         stateControl.nextStateAvaible = false;
         runningState = StateList[stateControl.upState][stateControl.downState].funk;
-        if (runningState == NULL)
-            printf("NULLL DEGERRERRRRRRR\n\n\n");
         timeoutConter = StateList[stateControl.upState][stateControl.downState].TimeoutNumber;
+        if (timeoutConter > 0)
+        {
+            setTimeout(timeoutConter);
+            isTimeoutEnable = true;
+        }
+        else
+        {
+            isTimeoutEnable = false;
+        }
     }
 
     State stateReturn = runningState();
+
+    if (isTimeoutEnable == true)
+    {
+        checkTime();
+        printf("\nTimeout check hheeereeee\n");
+        if (isTimeoutOccur() == true)
+        {
+            stateControl.nextStateAvaible = true;
+            stateControl.upState = 0;
+            stateControl.downState = 0;
+        }
+    }
 
     if (stateReturn == SUCCES)
     {
@@ -138,16 +158,10 @@ static void StateMachine()
         printf("--%d\n", StateList[stateControl.upState][stateControl.downState].TimeoutNumber);
         stateControl.downState++;
 
-        //if (stateControl.downState > 2)
-        //{
-        //    stateControl.upState = 0;
-        //    stateControl.downState = 0;
-        //}
         stateControl.nextStateAvaible = true;
 
         if (StateList[stateControl.upState][stateControl.downState].funk == NULL)
         {
-            //clear all state
             stateControl.upState = IDLE_STETA;
             stateControl.downState = 0;
         }
@@ -162,18 +176,16 @@ static void StateMachine()
     }
 };
 
-void CheckTimeOut() { printf("Timeout \n"); };
-
 void One_Ms_Task()
 {
     //Tasklarin kac saniye calisgini burada control et
     StateMachine();
-    CheckTimeOut();
+
     //------------------------
 }
 int main()
 {
-    for (int i = 0; i < 20; i++)
+    for (int i = 0; i < 10; i++)
     {
         One_Ms_Task();
     }
