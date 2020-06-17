@@ -18,6 +18,7 @@ typedef enum
 {
     FAILED,
     SUCCES,
+    RESTART,
     ERROR_CODE_ONE,
     ERROR_CODE_TWO,
     ERROR_TIMEOUT,
@@ -50,10 +51,32 @@ typedef struct
     uint8_t downState;
 } StateControl_t;
 
-State Sm_StateA(void) { printf("State A\n"); };
-State Sm_StateB(void) { printf("State B\n"); };
-State Sm_StateC(void) { printf("State C\n"); };
-State Sm_StateD(void) { printf("State D\n"); };
+State Sm_StateA(void)
+{
+    printf("State A\n");
+    return SUCCES;
+};
+State Sm_StateB(void)
+{
+    printf("State B\n");
+    return SUCCES;
+};
+State Sm_StateC(void)
+{
+    printf("State C\n");
+    return SUCCES;
+};
+State Sm_StateD(void)
+{
+    printf("State D\n");
+    return SUCCES;
+};
+State Sm_StateE(void)
+{
+    printf("State D\n");
+    //setRestartDownState(STATE_A);
+    return RESTART;
+};
 
 StateMachineType StateList[][4] = {
     {//First sTate
@@ -72,27 +95,33 @@ StateControl_t stateControl = {true};
 StateFunction_type runningState;
 int timeoutConter = 0;
 bool isTimeoutOccur = 0;
-void StateMachine()
+
+static void StateMachine()
 {
 
     if (stateControl.nextStateAvaible == true)
     {
         runningState = StateList[stateControl.upState][stateControl.downState].funk;
-        timeoutConter = StateList[0][0].TimeoutNumber;
+        timeoutConter = StateList[stateControl.upState][stateControl.downState].TimeoutNumber;
     }
-
-    if (runningState() == true)
+    State stateReturn = runningState();
+    if (stateReturn == SUCCES)
     {
+        printf("%d\n", StateList[stateControl.upState][stateControl.downState].StateInfo);
+        printf("%d\n", StateList[stateControl.upState][stateControl.downState].RerunsCount);
+        printf("%d\n", StateList[stateControl.upState][stateControl.downState].TimeoutNumber);
         stateControl.nextStateAvaible = true;
         stateControl.downState++;
         if (StateList[stateControl.upState][stateControl.downState].funk == NULL)
         {
             //clear all state
+            stateControl.upState = IDLE_STETA;
+            stateControl.downState = 0;
         }
     }
-    else if (isTimeoutOccur == true)
+    else if (stateReturn == RESTART)
     {
-        //Timeout handle here
+        // stateControl.downState = getRestartDownState();
     }
     else
     {
@@ -113,6 +142,10 @@ void One_Ms_Task()
 }
 int main()
 {
-    One_Ms_Task();
+    for (int i = 0; i < 10; i++)
+    {
+        One_Ms_Task();
+    }
+
     return 0;
 }
