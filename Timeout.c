@@ -1,3 +1,15 @@
+/**
+ * @file Timeout.c
+ * @author Ömer Çaylan (omer-ceylan17@hotmail.com)
+ * @brief 
+ * @version 0.1
+ * @date 2020-06-18
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
+
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -12,12 +24,12 @@ int setTimeout(int timeout)
     timeoutParameter = timeout;
 }
 
-int isTimeoutOccur()
+int isTimeoutOccur(void)
 {
     return timeutOccur;
 }
 
-int checkTime()
+int checkTime(void)
 {
     if (timeoutParameter <= 0)
     {

@@ -1,3 +1,14 @@
+/**
+ * @file StateMachine.c
+ * @author Ömer Çaylan (omer-ceylan17@hotmail.com)
+ * @brief 
+ * @version 0.1
+ * @date 2020-06-18
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -35,7 +46,7 @@ typedef enum
     MAX_STETE
 } StateType;
 
-typedef State (*StateFunction_type)();
+typedef State (*StateFunction_type)(void);
 typedef struct
 {
     StateFunction_type funk;
@@ -119,7 +130,7 @@ StateFunction_type runningState;
 int timeoutConter = 0;
 bool isTimeoutEnable = false;
 
-static void StateMachine()
+static void StateMachine(void)
 {
 
     if (stateControl.nextStateAvaible == true)
@@ -130,7 +141,7 @@ static void StateMachine()
         timeoutConter = StateList[stateControl.upState][stateControl.downState].TimeoutNumber;
         if (timeoutConter > 0)
         {
-            setTimeout(timeoutConter);
+            (void)setTimeout(timeoutConter);
             isTimeoutEnable = true;
         }
         else
@@ -143,7 +154,7 @@ static void StateMachine()
 
     if (isTimeoutEnable == true)
     {
-        checkTime();
+        (void)checkTime();
         if (isTimeoutOccur() == 1)
         {
             exit(1);
