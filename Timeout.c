@@ -1,9 +1,10 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "Timeout.h"
 #include "stdbool.h"
 
-static int timeoutParameter = 0;
+uint32_t timeoutParameter = 0;
 static bool timeutOccur = false;
 
 int setTimeout(int timeout)
@@ -20,11 +21,12 @@ int checkTime()
 {
     if (timeoutParameter <= 0)
     {
-        timeoutParameter = true;
+        timeutOccur = true;
     }
     else
     {
+
         timeoutParameter--;
-        timeoutParameter = false;
+        timeutOccur = false;
     }
 }

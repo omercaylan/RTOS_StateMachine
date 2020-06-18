@@ -98,7 +98,7 @@ State Sm_StateH(void)
 };
 StateMachineType StateList[][5] = {
     {//First sTate
-     {Sm_StateA, STATE_A, 0, 1},
+     {Sm_StateA, STATE_A, 10, 1},
      {Sm_StateB, STATE_B, 0, 2},
      {Sm_StateC, STATE_C, 0, 3},
      {Sm_StateD, STATE_D, 10, 4},
@@ -113,7 +113,8 @@ StateMachineType StateList[][5] = {
      {NULL, STATE_D, 40, 4}}
 
 };
-StateControl_t stateControl = {true};
+
+StateControl_t stateControl = {true, 0, 0, 0};
 StateFunction_type runningState;
 int timeoutConter = 0;
 bool isTimeoutEnable = false;
@@ -123,6 +124,7 @@ static void StateMachine()
 
     if (stateControl.nextStateAvaible == true)
     {
+        printf("\n-------------------next state avaible \n");
         stateControl.nextStateAvaible = false;
         runningState = StateList[stateControl.upState][stateControl.downState].funk;
         timeoutConter = StateList[stateControl.upState][stateControl.downState].TimeoutNumber;
@@ -142,9 +144,9 @@ static void StateMachine()
     if (isTimeoutEnable == true)
     {
         checkTime();
-        printf("\nTimeout check hheeereeee\n");
-        if (isTimeoutOccur() == true)
+        if (isTimeoutOccur() == 1)
         {
+            exit(1);
             stateControl.nextStateAvaible = true;
             stateControl.upState = 0;
             stateControl.downState = 0;
@@ -185,7 +187,12 @@ void One_Ms_Task()
 }
 int main()
 {
-    for (int i = 0; i < 10; i++)
+    printf("stateControl downState=%d\n", stateControl.downState);
+    printf("stateControl upState=%d\n", stateControl.upState);
+    printf("stateControl timeout=%d\n", stateControl.timeout);
+    printf("stateControl nextStateAvaible=%d\n", stateControl.nextStateAvaible);
+    printf("\n-----------------------------------\n");
+    for (int i = 0; i < 20; i++)
     {
         One_Ms_Task();
     }
