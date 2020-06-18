@@ -125,14 +125,17 @@ StateMachineType StateList[][5] = {
 
 };
 
-StateControl_t stateControl = {true, 0, 0, 0};
-StateFunction_type runningState;
-int timeoutConter = 0;
-bool isTimeoutEnable = false;
+static uint32_t timeoutConter = 0;
+static bool isTimeoutEnable = false;
+static StateFunction_type runningState;
+static StateControl_t stateControl = {
+    .nextStateAvaible = true,
+    .timeout = 0,
+    .upState = 0,
+    .downState = 0};
 
 static void StateMachine(void)
 {
-
     if (stateControl.nextStateAvaible == true)
     {
         printf("\n-------------------next state avaible \n");
@@ -169,8 +172,8 @@ static void StateMachine(void)
         printf("--%d", StateList[stateControl.upState][stateControl.downState].StateInfo);
         printf("--%d", StateList[stateControl.upState][stateControl.downState].RerunsCount);
         printf("--%d\n", StateList[stateControl.upState][stateControl.downState].TimeoutNumber);
-        stateControl.downState++;
 
+        stateControl.downState++;
         stateControl.nextStateAvaible = true;
 
         if (StateList[stateControl.upState][stateControl.downState].funk == NULL)
@@ -193,9 +196,9 @@ void One_Ms_Task()
 {
     //Tasklarin kac saniye calisgini burada control et
     StateMachine();
-
     //------------------------
 }
+
 int main()
 {
     printf("stateControl downState=%d\n", stateControl.downState);
@@ -207,6 +210,5 @@ int main()
     {
         One_Ms_Task();
     }
-
     return 0;
 }
