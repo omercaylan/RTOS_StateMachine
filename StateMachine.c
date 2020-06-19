@@ -30,7 +30,7 @@ typedef enum
 {
     FAILED,
     SUCCES,
-    RESTART,
+    JUMP,
     ERROR_CODE_ONE,
     ERROR_CODE_TWO,
     ERROR_TIMEOUT,
@@ -47,12 +47,14 @@ typedef enum
 } StateType;
 
 typedef State (*StateFunction_type)(void);
+//state jump eklemek gerekiyor buraya
 typedef struct
 {
     StateFunction_type funk;
     StateType StateInfo;
     int TimeoutNumber;
-    uint8_t RerunsCount;
+    //uint8_t JumpUpState;
+    uint8_t JumpDownState;
 } StateMachineType;
 
 typedef struct
@@ -158,7 +160,7 @@ static void StateMachine(void)
     if (isTimeoutEnable == true)
     {
         (void)checkTime();
-        if (isTimeoutOccur() == 1)
+        if (isTimeoutOccur() == true)
         {
             exit(1);
             stateControl.nextStateAvaible = true;
@@ -170,7 +172,7 @@ static void StateMachine(void)
     if (stateReturn == SUCCES)
     {
         printf("--%d", StateList[stateControl.upState][stateControl.downState].StateInfo);
-        printf("--%d", StateList[stateControl.upState][stateControl.downState].RerunsCount);
+        printf("--%d", StateList[stateControl.upState][stateControl.downState].JumpDownState);
         printf("--%d\n", StateList[stateControl.upState][stateControl.downState].TimeoutNumber);
 
         stateControl.downState++;
@@ -182,9 +184,10 @@ static void StateMachine(void)
             stateControl.downState = 0;
         }
     }
-    else if (stateReturn == RESTART)
+    else if (stateReturn == JUMP)
     {
-        // stateControl.downState = getRestartDownState();
+        stateControl.downState = StateList[stateControl.upState][stateControl.downState].JumpDownState;
+        stateControl.nextStateAvaible = true;
     }
     else
     {
