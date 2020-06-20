@@ -9,106 +9,65 @@
  * 
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include "Timeout.h"
+
+#include "StateMachine.h"
 //TODO: State machine create
 //TODO: USE Thread
 //TODO: Use clock
 
-typedef enum
-{
-    IDLE_STETA,      //waiting and next state transion here
-    SAFETY_STATE,    //all component init and ram check rom check here
-    MAIN_STATE,      //running main state
-    DIAGNOSTIC_STATE //diag state
-} ALL_SCENARIO_STATE;
-
-typedef enum
-{
-    FAILED,
-    SUCCES,
-    JUMP,
-    ERROR_CODE_ONE,
-    ERROR_CODE_TWO,
-    ERROR_TIMEOUT,
-    ERROR_NUMBER_OF_RERUNS
-} State;
-
-typedef enum
-{
-    STATE_A,
-    STATE_B,
-    STATE_C,
-    STATE_D,
-    MAX_STETE
-} StateType;
-
-typedef State (*StateFunction_type)(void);
-//state jump eklemek gerekiyor buraya
-typedef struct
-{
-    StateFunction_type funk;
-    StateType StateInfo;
-    int TimeoutNumber;
-    //uint8_t JumpUpState;
-    uint8_t JumpDownState;
-} StateMachineType;
-
-typedef struct
-{
-    uint32_t nextStateAvaible : 1;
-    uint32_t timeout;
-    ALL_SCENARIO_STATE upState;
-    uint8_t downState;
-} StateControl_t;
 
 State Sm_StateA(void)
 {
     printf("State A");
     return JUMP;
 };
+
 State Sm_StateB(void)
 {
     printf("State B");
     return SUCCES;
 };
+
 State Sm_StateC(void)
 {
     printf("State C");
     return SUCCES;
 };
+
 State Sm_StateD(void)
 {
     printf("State D");
     return SUCCES;
 };
+
 State Sm_StateE(void)
 {
     printf("State E");
     //setRestartDownState(STATE_A);
     return SUCCES;
 };
+
 State Sm_StateF(void)
 {
     printf("State F");
     //setRestartDownState(STATE_A);
     return SUCCES;
 };
+
 State Sm_StateG(void)
 {
     printf("State G");
     //setRestartDownState(STATE_A);
     return SUCCES;
 };
+
 State Sm_StateH(void)
 {
     printf("State H");
     //setRestartDownState(STATE_A);
     return SUCCES;
 };
+
 StateMachineType StateList[][5] = {
     {//First sTate
      {Sm_StateA, STATE_A, 10, 2},
@@ -130,6 +89,7 @@ StateMachineType StateList[][5] = {
 static uint32_t timeoutConter = 0;
 static bool isTimeoutEnable = false;
 static StateFunction_type runningState;
+
 static StateControl_t stateControl = {
     .nextStateAvaible = true,
     .timeout = 0,
@@ -140,7 +100,6 @@ static void StateMachine(void)
 {
     if (stateControl.nextStateAvaible == true)
     {
-        printf("\n-------------------next state avaible \n");
         stateControl.nextStateAvaible = false;
         runningState = StateList[stateControl.upState][stateControl.downState].funk;
         timeoutConter = StateList[stateControl.upState][stateControl.downState].TimeoutNumber;
@@ -195,7 +154,7 @@ static void StateMachine(void)
     }
 };
 
-void One_Ms_Task()
+void One_Ms_Task(void)
 {
     //Tasklarin kac saniye calisgini burada control et
     StateMachine();
