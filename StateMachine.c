@@ -68,7 +68,7 @@ typedef struct
 State Sm_StateA(void)
 {
     printf("State A");
-    return FAILED;
+    return JUMP;
 };
 State Sm_StateB(void)
 {
@@ -111,7 +111,7 @@ State Sm_StateH(void)
 };
 StateMachineType StateList[][5] = {
     {//First sTate
-     {Sm_StateA, STATE_A, 10, 1},
+     {Sm_StateA, STATE_A, 10, 2},
      {Sm_StateB, STATE_B, 0, 2},
      {Sm_StateC, STATE_C, 0, 3},
      {Sm_StateD, STATE_D, 10, 4},
