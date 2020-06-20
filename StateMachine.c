@@ -1,7 +1,11 @@
 /**
  * @file StateMachine.c
  * @author Ömer Çaylan (omer-ceylan17@hotmail.com)
- * @brief 
+ * @brief state machine feature 
+ * ! Timeout
+ * ! Jump
+ * ! State control
+ * ! Clear structure open to development
  * @version 0.1
  * @date 2020-06-18
  * 
@@ -9,12 +13,22 @@
  * 
  */
 
-
 #include "StateMachine.h"
-//TODO: State machine create
-//TODO: USE Thread
-//TODO: Use clock
+//TODO State machine create
+//TODO USE Thread
+//TODO Use clock
+//TODO Check all size
+//TODO fix header file
 
+static uint32_t timeoutConter = 0;
+static bool isTimeoutEnable = false;
+static StateFunction_type runningState;
+
+static StateControl_t stateControl = {
+    .nextStateAvaible = true,
+    .timeout = 0,
+    .upState = 0,
+    .downState = 0};
 
 State Sm_StateA(void)
 {
@@ -86,16 +100,6 @@ StateMachineType StateList[][5] = {
 
 };
 
-static uint32_t timeoutConter = 0;
-static bool isTimeoutEnable = false;
-static StateFunction_type runningState;
-
-static StateControl_t stateControl = {
-    .nextStateAvaible = true,
-    .timeout = 0,
-    .upState = 0,
-    .downState = 0};
-
 static void StateMachine(void)
 {
     if (stateControl.nextStateAvaible == true)
@@ -130,9 +134,9 @@ static void StateMachine(void)
 
     if (stateReturn == SUCCES)
     {
-        printf("--%d", StateList[stateControl.upState][stateControl.downState].StateInfo);
-        printf("--%d", StateList[stateControl.upState][stateControl.downState].JumpDownState);
-        printf("--%d\n", StateList[stateControl.upState][stateControl.downState].TimeoutNumber);
+        (void)printf("--%d", StateList[stateControl.upState][stateControl.downState].StateInfo);
+        (void)printf("--%d", StateList[stateControl.upState][stateControl.downState].JumpDownState);
+        (void)printf("--%d\n", StateList[stateControl.upState][stateControl.downState].TimeoutNumber);
 
         stateControl.downState++;
         stateControl.nextStateAvaible = true;
@@ -163,11 +167,11 @@ void One_Ms_Task(void)
 
 int main()
 {
-    printf("stateControl downState=%d\n", stateControl.downState);
-    printf("stateControl upState=%d\n", stateControl.upState);
-    printf("stateControl timeout=%d\n", stateControl.timeout);
-    printf("stateControl nextStateAvaible=%d\n", stateControl.nextStateAvaible);
-    printf("\n-----------------------------------\n");
+    (void)printf("stateControl downState=%d\n", stateControl.downState);
+    (void)printf("stateControl upState=%d\n", stateControl.upState);
+    (void)printf("stateControl timeout=%d\n", stateControl.timeout);
+    (void)printf("stateControl nextStateAvaible=%d\n", stateControl.nextStateAvaible);
+    (void)printf("\n-----------------------------------\n");
     for (int i = 0; i < 20; i++)
     {
         One_Ms_Task();
