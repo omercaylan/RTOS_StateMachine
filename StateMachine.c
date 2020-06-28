@@ -155,6 +155,7 @@ static void StateMachine(void)
     else
     {
         /* code */
+        //logging system will be added 
     }
 };
 
